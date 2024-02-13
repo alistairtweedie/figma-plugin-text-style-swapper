@@ -1,0 +1,167 @@
+<style>
+  :root {
+    --blue: #18a0fb;
+    --blue-pressed: #0a6dc2;
+    --blue-hover: #2faafd;
+    --blue-outline:#7cc4f8;
+    --red: #f24822;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    margin: 0;
+    padding: 16px;
+    background-color: var(--figma-color-bg);
+    color: var(--figma-color-text);
+  }
+
+  .fieldset {
+    border: 0;
+    padding: 0;
+  }
+
+  .legend {
+    margin-bottom: 4px;
+  }
+
+  .radio {
+    align-items: center;
+    cursor: default;
+    display: flex;
+    height: 32px;
+    position: relative;
+  }
+
+  .radio-button {
+    opacity: 0;
+    width: 10px;
+    height: 10px;
+    margin: 0;
+    padding: 0;
+    margin-left: -4px;
+  }
+
+.radio-label {
+  align-items: center;
+  display: flex;
+  font-size: 12px;
+  margin-left: -16px;
+  padding: 0 16px 0 24px;
+  height: 100%;
+}
+
+.radio-label:before {
+  border: 1px solid var(--figma-color-text);
+  border-radius: 2px;
+  content: '';
+  display: block;
+  width: 10px;
+  height: 10px;
+  margin: 2px 10px 0 -8px;
+  border-radius: 50%;
+}
+
+.figma-light body .radio-button:checked + .radio-label:before {
+  background-image: url('data:image/svg+xml,%3Csvg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"%3E%3Crect width="6" height="6" rx="3" fill="black" fill-opacity="0.8"/%3E%3C/svg%3E%0A');
+  background-repeat: no-repeat;
+  background-position: 2px 2px;
+}
+
+.figma-dark body .radio-button:checked + .radio-label:before {
+  background-image: url('data:image/svg+xml,%3Csvg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"%3E%3Crect width="6" height="6" rx="3" fill="white" fill-opacity="0.8"/%3E%3C/svg%3E%0A');
+  background-repeat: no-repeat;
+  background-position: 2px 2px;
+}
+
+.error {
+  color: var(--red);
+  height: 16px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  background-color: var(--blue);
+  color: white;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 500;
+  height: 32px;
+  padding: 0 16px;
+  text-decoration: none;
+  outline: none;
+  border: 2px solid transparent;
+}
+
+.button:hover {
+  background-color: var(--blue-pressed);
+}
+
+.button:active {
+  outline-color: var(--blue-outline, rgba(0, 0, 0, .3));
+  outline-width: 2px;
+  outline-offset: -2px;
+  outline-style: solid;
+}
+</style>
+
+<fieldset class="fieldset">
+
+  <legend class="legend">Select Language:</legend>
+
+  <div class="radio">
+    <input id="radioButton1" type="radio" class="radio-button" value="English" name="language" checked>
+    <label for="radioButton1" class="radio-label">English</label>
+  </div>
+
+  <div class="radio">
+    <input id="radioButton2" type="radio" class="radio-button" value="Chinese" name="language">
+    <label for="radioButton2" class="radio-label">Chinese</label>
+  </div>
+
+  <div class="radio">
+    <input id="radioButton3" type="radio" class="radio-button" value="Japanese" name="language">
+    <label for="radioButton3" class="radio-label">Japanese</label>
+  </div>
+
+</fieldset>
+
+<div id="error" class="error"></div>
+
+<button id="swapStylesBtn" class="button button--primary ">Swap Text Styles</button>
+
+<script>
+  // Send message to main plugin code to log selected frame info
+  document.getElementById('swapStylesBtn').addEventListener('click', function () {
+
+    const selectedLanguage = document.querySelector('input[name="language"]:checked').value;
+
+    document.getElementById('error').innerHTML = "";
+
+    parent.postMessage({ pluginMessage: { type: 'swapTextStyles', language: selectedLanguage } }, '*');
+  });
+
+
+  // Listen for messages from main plugin code
+  window.onmessage = event => {
+    const message = event.data.pluginMessage;
+
+    // Handle error message
+    if (message.type === 'error') {
+      document.getElementById('error').textContent = message.message;
+    }
+
+    // Log identified text styles
+    if (message.type === 'identifiedTextStyles') {
+      //console.log('Identified Text Styles:', message.styles);
+    }
+  };
+</script>
